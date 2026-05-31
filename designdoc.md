@@ -81,14 +81,14 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    SU[Superuser] --> Admin[Admin Experience]
-    ST[Student] --> User[User Experience]
-    LE[Lecturer] --> User[User Experience]
+    SU[Superuser] --> Admin[Admin interface]
+    ST[Student] --> User[User interface]
+    LE[Lecturer] --> User[User interface]
 ```
 
-- **Superuser**: uses **Admin** experience
-- **Student**: uses **User** experience and sees student-specific functionality
-- **Lecturer**: uses **User** experience and sees lecturer-specific functionality
+- **Superuser**: uses **Admin** interface
+- **Student**: uses **User** interface and sees student-specific functionality
+- **Lecturer**: uses **User** interface and sees lecturer-specific functionality
 - Existing role-based permissions remain unchanged during Phase 1
 
 ---
