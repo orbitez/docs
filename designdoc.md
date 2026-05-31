@@ -113,13 +113,15 @@ High-level steps:
 
 ---
 
-## 7. Success Criteria
+## 7. Implementation Approach
+
+To avoid affecting the existing LMS and other ongoing work, Phase 1 will be implemented with minimal changes to the current system. The existing login system, user roles, permissions, and functionality will be reused. The main focus will be on creating separate Admin and User experiences while keeping the current functionality unchanged.
+
+---
+
+## 8. Success Criteria
 
 - Admins get a separate Admin interface
 - Students and lecturers see the correct screens and menu options
 - Access restrictions work correctly for each role
 - Existing functionality continues to work without issues
-
----
-
-*This Phase 1 document focuses only on creating separate Admin and User interfaces. Existing functionality and workflows are outside the scope of this phase.*
