@@ -10,7 +10,7 @@
 
 ## 1. Problem Statement
 
-Right now, **students, teachers, and admins use a largely shared experience**, which makes it hard to clearly separate “system administration” tasks (creating users, configuring programs, managing the platform) from “day‑to‑day usage” tasks (teachers teaching their classes and students accessing their courses and materials).
+Right now, **students, lecturers, and admins use a largely shared experience**, which makes it hard to clearly separate “system administration” tasks (creating users, configuring programs, managing the platform) from “day‑to‑day usage” tasks (teachers teaching their classes and students accessing their courses and materials).
 
 We need a **clearer, role-based experience** without rebuilding the entire system.
 
@@ -18,19 +18,20 @@ We need a **clearer, role-based experience** without rebuilding the entire syste
 
 ## 2. Goals
 
-- Create **two top-level interfaces**:
-  - **Admin interface** for **superusers**
-  - **User interface** for **students** and **lecturers**
-- Keep the user experience cleaner by **showing different menus/screens** inside User depending on whether the account is a student or a lecturer
-- Enforce: a user account is **only one thing** — **student OR lecturer**
+- Establish **two clearly separated top-level experiences**:
+  - **Admin experience** for **superusers**
+  - **User experience** for **students** and **lecturers**
+- Keep the user experience cleaner by **showing different menus/screens** within the User experience depending on whether the account is a student or a lecturer
+- Review and, if required, enforce mutual exclusivity between student and lecturer roles
 
 ---
 
 ## 3. Non-goals
 
 - No change to student course registration/sign-up flow
-- No change to teacher/lecturer course management flow
+- No change to lecturer course management flow
 - No change to course content access rules
+- No redesign of existing business logic or permission rules
 
 ---
 
@@ -41,10 +42,10 @@ We need a **clearer, role-based experience** without rebuilding the entire syste
 ```mermaid
 flowchart LR
     Login[Login]
-    Login --> Menu{Who are you?}
-    Menu -->|Admin| MixedAdmin[Admin features + shared UI]
-    Menu -->|Lecturer| MixedLecturer[Lecturer + shared UI]
-    Menu -->|Student| MixedStudent[Student features + shared UI]
+    Login --> Role{User Role}
+    Role -->|Superuser| Admin[Admin features + shared layout]
+    Role -->|Lecturer| Lecturer[Lecturer features + shared layout]
+    Role -->|Student| Student[Student features + shared layout]
 ```
 
 ### 3.2 Proposed State
@@ -53,8 +54,8 @@ flowchart LR
 flowchart TB
     Login[Login] --> Split{Role}
 
-    Split -->|Superuser| Admin[Admin Interface]
-    Split -->|Student/Lecturer| User[User Interface]
+    Split -->|Superuser| Admin[Admin Experience]
+    Split -->|Student/Lecturer| User[User Experience]
 
     User --> Type{Account Type}
 
@@ -68,9 +69,9 @@ flowchart TB
 
 | Topic                              | Currently                                                 | Proposed (in Phase 1)                                                     |
 | ---------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------- |
-| **Layout**                         | One UI for all, role-based menus                          | Two interfaces: Admin _(superuser)_ + User _(student/lecturer)_           |
-| **Admin**                          | Mixed into same overall app experience + Django `/admin/` | Admin interface = **Django `/admin/`** for superusers (clear entry point) |
-| **Account Roles**                  | `is_student` / `is_lecturer` flags exist                  | Enforce **student OR lecturer** (not both)                                |
+| **Layout**                         | One shared layout with role-based menus                          | Two experiences: Admin (superuser)_ and User _(student/lecturer)_           |
+| **Admin**                          | Admin-only functionality exists but is accessed within the shared application layout | Provide a clearer and more distinct Admin experience while reusing existing admin functionality |
+| **Account Roles**                  | `is_student` / `is_lecturer` flags exist                  | Review and clarify student/lecturer role assignment behaviour                                |
 | **Student sign-up / registration** | Current behavior                                          | **No change (out of scope)**                                              |
 | **Teachers / lecturers**           | Current behavior                                          | **No change (out of scope)**                                              |
 
@@ -80,15 +81,15 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    SU[Superuser] --> Admin[Admin interface]
-    ST[Student] --> User[User interface]
-    LE[Lecturer] --> User[User interface]
+    SU[Superuser] --> Admin[Admin Experience]
+    ST[Student] --> User[User Experience]
+    LE[Lecturer] --> User[User Experience]
 ```
 
-- **Superuser**: uses **Admin** interface
-- **Student**: uses **User** interface (student screens)
-- **Lecturer**: uses **User** interface (lecturer screens)
-- A **user** account is **only one role**: student _or_ lecturer
+- **Superuser**: uses **Admin** experience
+- **Student**: uses **User** experience and sees student-specific functionality
+- **Lecturer**: uses **User** experience and sees lecturer-specific functionality
+- Existing role-based permissions remain unchanged during Phase 1
 
 ---
 
@@ -96,28 +97,29 @@ flowchart TB
 
 ```mermaid
 flowchart TD
-    A[Define entry points and routing] --> B[Create Admin vs User separation]
-    B --> C[Adjust navigation/menus for User by role]
-    C --> D[Enforce student OR lecturer rule]
-    D --> E[Smoke test with student + lecturer + superuser accounts]
+    A[Review current routing and entry points] --> B[Separate shared layouts into Admin and User experiences]
+    B --> C[Adjust user navigation and menus by role]
+    C --> D[Review student and lecturer role assignment behaviour]
+    D --> E[Smoke test with student, lecturer, and superuser accounts]
 ```
 
 High-level steps:
 
-- Define clean entry points: Admin vs User
-- Update routing so superusers land in Admin
-- Update User navigation to show only relevant items per role
-- Enforce “student OR lecturer” for accounts
-- Quick testing with demo users
+- Understand the current routing and page flow
+- Separate the Admin and User interfaces
+- Update menus based on the user's role
+- Check how student and lecturer roles are assigned
+- Test using student, lecturer, and admin accounts
 
 ---
 
 ## 7. Success Criteria
 
-- Superuser can access **Admin interface** cleanly
-- Student and lecturer access **User interface** and see the correct menus
-- A user account cannot be both student and lecturer
+- Admins get a separate Admin interface
+- Students and lecturers see the correct screens and menu options
+- Access restrictions work correctly for each role
+- Existing functionality continues to work without issues
 
 ---
 
-_This Phase 1 doc intentionally does not include changes to student registration or lecturer management, since those are out of scope for now._
+*This Phase 1 document focuses only on creating separate Admin and User interfaces. Existing functionality and workflows are outside the scope of this phase.*
